@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 
-namespace Telhai.DotNet.PlayerProject
+namespace YuvalChaver.Telhai.DotNet.PlayerProject
 {
     /// <summary>
     /// Interaction logic for Settings.xaml

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Telhai.DotNet.PlayerProject.Models;
+using YuvalChaver.Telhai.DotNet.PlayerProject.Models;
 
-namespace Telhai.DotNet.PlayerProject
+namespace YuvalChaver.Telhai.DotNet.PlayerProject
 {
     public class MusicTrack
     {

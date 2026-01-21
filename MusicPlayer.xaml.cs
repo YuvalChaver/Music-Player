@@ -9,10 +9,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Threading;
 using System.Threading.Tasks;
-using Telhai.DotNet.PlayerProject.Services;
-using Telhai.DotNet.PlayerProject.Models;
+using YuvalChaver.Telhai.DotNet.PlayerProject.Services;
+using YuvalChaver.Telhai.DotNet.PlayerProject.Models;
 
-namespace Telhai.DotNet.PlayerProject
+namespace YuvalChaver.Telhai.DotNet.PlayerProject
 {
     /// <summary>
     /// Interaction logic for MusicPlayer.xaml
@@ -181,6 +181,7 @@ namespace Telhai.DotNet.PlayerProject
             if (lstLibrary.SelectedItem is MusicTrack track)
             {
                 EditTrackWindow editWindow = new EditTrackWindow(track);
+                editWindow.Owner = this;
                 if (editWindow.ShowDialog() == true)
                 {
                     SaveLibrary();

@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Telhai.DotNet.PlayerProject
+namespace YuvalChaver.Telhai.DotNet.PlayerProject
 {
     public class AppSettings
     {
-        public List<string> MusicFolders { get; set; } = new List<string>();
+        public ObservableCollection<string> MusicFolders { get; set; } = new ObservableCollection<string>();
         private const string SETTINGS_FILE = "settings.json";
 
         /// <summary>
@@ -27,14 +28,20 @@ namespace Telhai.DotNet.PlayerProject
             if (File.Exists(SETTINGS_FILE))
             {
                 string json = File.ReadAllText(SETTINGS_FILE);
-                return JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
+                var settings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
+                // Ensure MusicFolders is properly initialized as ObservableCollection
+                if (settings.MusicFolders == null)
+                {
+                    settings.MusicFolders = new ObservableCollection<string>();
+                }
+                else if (!(settings.MusicFolders is ObservableCollection<string>))
+                {
+                    var temp = new ObservableCollection<string>(settings.MusicFolders);
+                    settings.MusicFolders = temp;
+                }
+                return settings;
             }
             return new AppSettings();
         }
-
-
-
-
-
     }
 }

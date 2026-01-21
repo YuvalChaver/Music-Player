@@ -27,12 +27,14 @@ C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\bin\Debug\n
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\bin\Debug\net9.0-windows\Telhai.DotNet.PlayerProject.runtimeconfig.json
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\bin\Debug\net9.0-windows\Telhai.DotNet.PlayerProject.dll
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\bin\Debug\net9.0-windows\Telhai.DotNet.PlayerProject.pdb
+C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\EditTrackWindow.g.cs
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\MainWindow.g.cs
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\MusicPlayer.g.cs
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\Settings.g.cs
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\App.g.cs
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\Telhai.DotNet.PlayerProject_MarkupCompile.cache
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\Telhai.DotNet.PlayerProject_MarkupCompile.lref
+C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\EditTrackWindow.baml
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\MainWindow.baml
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\MusicPlayer.baml
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\Settings.baml
@@ -41,11 +43,9 @@ C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\n
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\Telhai.DotNet.PlayerProject.AssemblyInfoInputs.cache
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\Telhai.DotNet.PlayerProject.AssemblyInfo.cs
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\Telhai.DotNet.PlayerProject.csproj.CoreCompileInputs.cache
+C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\Telhai.DotNet.PlayerProject.sourcelink.json
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\Telhai.DotNet.PlayerProject.dll
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\refint\Telhai.DotNet.PlayerProject.dll
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\Telhai.DotNet.PlayerProject.pdb
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\Telhai.DotNet.PlayerProject.genruntimeconfig.cache
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\ref\Telhai.DotNet.PlayerProject.dll
-C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\Telhai.DotNet.PlayerProject.sourcelink.json
-C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\EditTrackWindow.baml
-C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\EditTrackWindow.g.cs

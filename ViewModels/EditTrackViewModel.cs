@@ -1,76 +1,131 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Telhai.DotNet.PlayerProject.ViewModels
+namespace YuvalChaver.Telhai.DotNet.PlayerProject.ViewModels
 {
+    /// <summary>
+    /// MVVM ViewModel for editing track information
+    /// Manages track metadata and custom images
+    /// </summary>
     public class EditTrackViewModel : INotifyPropertyChanged
     {
         private MusicTrack _track;
-        private string _trackTitle;
-        private List<string> _images;
-        private string _selectedImage;
+        private string _title = string.Empty;
+        private string _artistName = string.Empty;
+        private string _albumName = string.Empty;
+        private string _albumArtworkUrl = string.Empty;
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        public string Title
+        {
+            get => _title;
+            set
+            {
+                if (_title != value)
+                {
+                    _title = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string ArtistName
+        {
+            get => _artistName;
+            set
+            {
+                if (_artistName != value)
+                {
+                    _artistName = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string AlbumName
+        {
+            get => _albumName;
+            set
+            {
+                if (_albumName != value)
+                {
+                    _albumName = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public string AlbumArtworkUrl
+        {
+            get => _albumArtworkUrl;
+            set
+            {
+                if (_albumArtworkUrl != value)
+                {
+                    _albumArtworkUrl = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public ObservableCollection<string> CustomImages { get; set; } = new ObservableCollection<string>();
 
         public EditTrackViewModel(MusicTrack track)
         {
             _track = track;
-            _trackTitle = track.Title;
-            _images = new List<string>(track.CustomImages);
-            _selectedImage = _images.Count > 0 ? _images[0] : string.Empty;
+            Title = track.Title;
+            ArtistName = track.ArtistName ?? string.Empty;
+            AlbumName = track.AlbumName ?? string.Empty;
+            AlbumArtworkUrl = track.AlbumArtworkUrl ?? string.Empty;
+
+            // Populate custom images
+            foreach (var image in track.CustomImages)
+            {
+                CustomImages.Add(image);
+            }
         }
 
-        public string TrackTitle
+        /// <summary>
+        /// Saves changes back to the original track object
+        /// </summary>
+        public void SaveChanges()
         {
-            get => _trackTitle;
-            set { if (_trackTitle != value) { _trackTitle = value; OnPropertyChanged(); } }
+            _track.Title = Title;
+            _track.ArtistName = ArtistName;
+            _track.AlbumName = AlbumName;
+            _track.AlbumArtworkUrl = AlbumArtworkUrl;
+            
+            // Update custom images
+            _track.CustomImages.Clear();
+            foreach (var image in CustomImages)
+            {
+                _track.CustomImages.Add(image);
+            }
         }
 
-        public string ArtistName => _track.ArtistName ?? "N/A";
-        public string AlbumName => _track.AlbumName ?? "N/A";
-        public string FilePath => _track.FilePath;
-
-        public List<string> Images
-        {
-            get => _images;
-            set { if (_images != value) { _images = value; OnPropertyChanged(); } }
-        }
-
-        public string SelectedImage
-        {
-            get => _selectedImage;
-            set { if (_selectedImage != value) { _selectedImage = value; OnPropertyChanged(); } }
-        }
-
+        /// <summary>
+        /// Adds an image path to custom images
+        /// </summary>
         public void AddImage(string imagePath)
         {
-            if (!string.IsNullOrEmpty(imagePath) && !Images.Contains(imagePath))
+            if (!string.IsNullOrEmpty(imagePath) && !CustomImages.Contains(imagePath))
             {
-                Images.Add(imagePath);
-                OnPropertyChanged(nameof(Images));
-                SelectedImage = imagePath;
+                CustomImages.Add(imagePath);
             }
         }
 
+        /// <summary>
+        /// Removes an image from custom images
+        /// </summary>
         public void RemoveImage(string imagePath)
         {
-            if (Images.Contains(imagePath))
-            {
-                Images.Remove(imagePath);
-                OnPropertyChanged(nameof(Images));
-                SelectedImage = Images.Count > 0 ? Images[0] : string.Empty;
-            }
+            CustomImages.Remove(imagePath);
         }
 
-        public void Save()
-        {
-            _track.Title = TrackTitle;
-            _track.CustomImages = new List<string>(Images);
-        }
-
-        protected void OnPropertyChanged([CallerMemberName] string name = "")
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }

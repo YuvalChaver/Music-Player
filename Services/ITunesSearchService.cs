@@ -4,9 +4,9 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Telhai.DotNet.PlayerProject.Models;
+using YuvalChaver.Telhai.DotNet.PlayerProject.Models;
 
-namespace Telhai.DotNet.PlayerProject.Services
+namespace YuvalChaver.Telhai.DotNet.PlayerProject.Services
 {
     /// <summary>
     /// Service for interacting with iTunes Search API

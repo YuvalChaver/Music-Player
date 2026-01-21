@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Telhai.DotNet.PlayerProject.Models
+namespace YuvalChaver.Telhai.DotNet.PlayerProject.Models
 {
     /// <summary>
     /// Represents the response from iTunes Search API

@@ -1,45 +1,31 @@
+using System;
 using System.Windows;
+using System.Windows.Controls;
 using Microsoft.Win32;
-using Telhai.DotNet.PlayerProject.ViewModels;
+using YuvalChaver.Telhai.DotNet.PlayerProject.ViewModels;
 
-namespace Telhai.DotNet.PlayerProject
+namespace YuvalChaver.Telhai.DotNet.PlayerProject
 {
+    /// <summary>
+    /// Interaction logic for EditTrackWindow.xaml
+    /// MVVM pattern - DataContext is EditTrackViewModel
+    /// </summary>
     public partial class EditTrackWindow : Window
     {
-        private EditTrackViewModel _viewModel;
+        private MusicTrack track;
+        private EditTrackViewModel viewModel;
 
-        public EditTrackWindow(MusicTrack track)
+        public EditTrackWindow(MusicTrack musicTrack)
         {
             InitializeComponent();
-            _viewModel = new EditTrackViewModel(track);
-            DataContext = _viewModel;
-            UpdateImagePreview();
-        }
-
-        private void BtnAddImage_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Image Files|*.png;*.jpg;*.jpeg;*.bmp;*.gif";
-            
-            if (ofd.ShowDialog() == true)
-            {
-                _viewModel.AddImage(ofd.FileName);
-                UpdateImagePreview();
-            }
-        }
-
-        private void BtnRemoveImage_Click(object sender, RoutedEventArgs e)
-        {
-            if (!string.IsNullOrEmpty(_viewModel.SelectedImage))
-            {
-                _viewModel.RemoveImage(_viewModel.SelectedImage);
-                UpdateImagePreview();
-            }
+            track = musicTrack;
+            viewModel = new EditTrackViewModel(track);
+            DataContext = viewModel;
         }
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
-            _viewModel.Save();
+            viewModel.SaveChanges();
             DialogResult = true;
             Close();
         }
@@ -50,24 +36,51 @@ namespace Telhai.DotNet.PlayerProject
             Close();
         }
 
-        private void UpdateImagePreview()
+        private void BtnAddImage_Click(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(_viewModel.SelectedImage) && System.IO.File.Exists(_viewModel.SelectedImage))
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "Image files (*.jpg;*.jpeg;*.png;*.bmp;*.gif)|*.jpg;*.jpeg;*.png;*.bmp;*.gif|All files (*.*)|*.*";
+            dialog.Title = "Select Image for Track";
+
+            if (dialog.ShowDialog() == true)
+            {
+                string imagePath = dialog.FileName;
+                viewModel.AddImage(imagePath);
+                txtImageStatus.Text = $"Added: {System.IO.Path.GetFileName(imagePath)}";
+            }
+        }
+
+        private void BtnRemoveImage_Click(object sender, RoutedEventArgs e)
+        {
+            Button? btn = sender as Button;
+            if (btn?.DataContext is string imagePath)
+            {
+                viewModel.RemoveImage(imagePath);
+                txtImageStatus.Text = "Image removed";
+            }
+        }
+
+        private void BtnPreviewArtwork_Click(object sender, RoutedEventArgs e)
+        {
+            string url = TxtArtworkUrl.Text;
+            if (!string.IsNullOrEmpty(url))
             {
                 try
                 {
-                    var bitmap = new System.Windows.Media.Imaging.BitmapImage();
-                    bitmap.BeginInit();
-                    bitmap.UriSource = new System.Uri(_viewModel.SelectedImage);
-                    bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
-                    bitmap.EndInit();
-                    imgPreview.Source = bitmap;
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = url,
+                        UseShellExecute = true
+                    });
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Could not open URL: {ex.Message}");
+                }
             }
             else
             {
-                imgPreview.Source = null;
+                MessageBox.Show("No artwork URL specified");
             }
         }
     }

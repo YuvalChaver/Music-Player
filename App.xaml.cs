@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace Telhai.DotNet.PlayerProject
+namespace YuvalChaver.Telhai.DotNet.PlayerProject
 {
     /// <summary>
     /// Interaction logic for App.xaml
