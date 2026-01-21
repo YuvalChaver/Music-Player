@@ -5,7 +5,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using System.Threading;
+using System.Threading.Tasks;
+using Telhai.DotNet.PlayerProject.Services;
+using Telhai.DotNet.PlayerProject.Models;
 
 namespace Telhai.DotNet.PlayerProject
 {
@@ -19,6 +24,13 @@ namespace Telhai.DotNet.PlayerProject
         private List<MusicTrack> library = new List<MusicTrack>();
         private bool isDragging = false;
         private const string FILE_NAME = "library.json";
+        
+        // iTunes Service and cancellation token for API calls
+        private ITunesSearchService iTunesService = new ITunesSearchService();
+        private CancellationTokenSource? currentSearchCancellation;
+        
+        // Currently playing track
+        private MusicTrack? currentTrack;
 
         public MusicPlayer()
         {
@@ -52,15 +64,18 @@ namespace Telhai.DotNet.PlayerProject
         // --- EMPTY PLACEHOLDERS TO MAKE IT BUILD ---
         private void BtnPlay_Click(object sender, RoutedEventArgs e)
         {
-            //if (sender is Button btn)
-            //{
-            //    btn.Background = Brushes.LightGreen;
-            //}
-            
-
-            mediaPlayer.Play();
-            timer.Start();
-            txtStatus.Text = "Playing";
+            // If a track is selected, play it
+            if (lstLibrary.SelectedItem is MusicTrack track && currentTrack?.FilePath != track.FilePath)
+            {
+                PlayTrack(track);
+            }
+            else
+            {
+                // Resume playback if already loaded
+                mediaPlayer.Play();
+                timer.Start();
+                txtStatus.Text = "Playing";
+            }
         }
         private void BtnPause_Click(object sender, RoutedEventArgs e)
         {
@@ -162,12 +177,177 @@ namespace Telhai.DotNet.PlayerProject
         {
             if (lstLibrary.SelectedItem is MusicTrack track)
             {
-                mediaPlayer.Open(new Uri(track.FilePath));
-                mediaPlayer.Play();
-                timer.Start();
-                txtCurrentSong.Text = track.Title;
-                txtStatus.Text = "Playing";
+                PlayTrack(track);
             }
+        }
+
+        /// <summary>
+        /// Handles single click on library item - shows track and file path info
+        /// </summary>
+        private void LstLibrary_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lstLibrary.SelectedItem is MusicTrack track)
+            {
+                // Display track info without playing
+                txtCurrentSong.Text = track.Title;
+                txtFilePath.Text = $"Path: {track.FilePath}";
+                
+                // Display metadata if available
+                if (!string.IsNullOrEmpty(track.ArtistName))
+                    txtArtist.Text = track.ArtistName;
+                
+                if (!string.IsNullOrEmpty(track.AlbumName))
+                    txtAlbum.Text = track.AlbumName;
+            }
+        }
+
+        /// <summary>
+        /// Plays a track and initiates asynchronous iTunes metadata search
+        /// </summary>
+        private async void PlayTrack(MusicTrack track)
+        {
+            // Store current track reference
+            currentTrack = track;
+            
+            // Cancel any previous iTunes search
+            currentSearchCancellation?.Cancel();
+            currentSearchCancellation = new CancellationTokenSource();
+
+            // Play the local file
+            mediaPlayer.Open(new Uri(track.FilePath));
+            mediaPlayer.Play();
+            timer.Start();
+            txtCurrentSong.Text = track.Title;
+            txtStatus.Text = "Playing";
+
+            // Search iTunes metadata asynchronously without blocking UI
+            await SearchAndUpdateTrackMetadataAsync(track, currentSearchCancellation.Token);
+        }
+
+        /// <summary>
+        /// Searches iTunes API for track metadata and updates UI
+        /// Runs asynchronously without blocking the UI or audio playback
+        /// </summary>
+        private async Task SearchAndUpdateTrackMetadataAsync(MusicTrack track, CancellationToken cancellationToken)
+        {
+            try
+            {
+                // Extract search query from filename
+                string searchQuery = iTunesService.ExtractSearchQuery(track.Title);
+                
+                // Search iTunes API asynchronously
+                ITunesTrack? iTunesTrack = await iTunesService.SearchTrackAsync(searchQuery, cancellationToken);
+
+                // Check if search was cancelled or if we're no longer playing this track
+                if (cancellationToken.IsCancellationRequested || currentTrack != track)
+                    return;
+
+                if (iTunesTrack != null)
+                {
+                    // Update track metadata
+                    track.ArtistName = iTunesTrack.ArtistName;
+                    track.AlbumName = iTunesTrack.CollectionName;
+                    track.AlbumArtworkUrl = iTunesTrack.ArtworkUrl;
+                    track.TrackViewUrl = iTunesTrack.TrackViewUrl;
+
+                    if (DateTime.TryParse(iTunesTrack.ReleaseDate, out DateTime releaseDate))
+                    {
+                        track.ReleaseDate = releaseDate;
+                    }
+
+                    // Update UI with new metadata
+                    UpdateTrackDetailsUI(track);
+                }
+                else
+                {
+                    // No results found - display filename without extension
+                    UpdateTrackDetailsUIError(track);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                System.Diagnostics.Debug.WriteLine("iTunes search was cancelled");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error searching iTunes: {ex.Message}");
+                UpdateTrackDetailsUIError(track);
+            }
+        }
+
+        /// <summary>
+        /// Updates the UI with track metadata from iTunes
+        /// </summary>
+        private void UpdateTrackDetailsUI(MusicTrack track)
+        {
+            // Update text information
+            if (!string.IsNullOrEmpty(track.ArtistName))
+            {
+                txtArtist.Text = track.ArtistName;
+            }
+
+            if (!string.IsNullOrEmpty(track.AlbumName))
+            {
+                txtAlbum.Text = track.AlbumName;
+            }
+
+            // Update album artwork
+            if (!string.IsNullOrEmpty(track.AlbumArtworkUrl))
+            {
+                try
+                {
+                    BitmapImage bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(track.AlbumArtworkUrl);
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                    imgAlbumArt.Source = bitmap;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error loading album art: {ex.Message}");
+                    imgAlbumArt.Source = LoadDefaultAlbumArt();
+                }
+            }
+
+            // Display file path
+            txtFilePath.Text = $"Path: {track.FilePath}";
+        }
+
+        /// <summary>
+        /// Updates UI when no iTunes data is found
+        /// </summary>
+        private void UpdateTrackDetailsUIError(MusicTrack track)
+        {
+            txtArtist.Text = "Artist not found";
+            txtAlbum.Text = "Album not found";
+            txtFilePath.Text = $"Path: {track.FilePath}";
+            imgAlbumArt.Source = LoadDefaultAlbumArt();
+        }
+
+        /// <summary>
+        /// Loads the default album artwork image
+        /// </summary>
+        private BitmapImage? LoadDefaultAlbumArt()
+        {
+            try
+            {
+                string defaultArtPath = MusicTrack.DefaultArtworkPath;
+                if (File.Exists(defaultArtPath))
+                {
+                    BitmapImage bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(defaultArtPath);
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                    return bitmap;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading default album art: {ex.Message}");
+            }
+            return null;
         }
 
         private void BtnSettings_Click(object sender, RoutedEventArgs e)

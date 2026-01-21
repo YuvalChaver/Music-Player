@@ -46,3 +46,4 @@ C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\n
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\Telhai.DotNet.PlayerProject.pdb
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\Telhai.DotNet.PlayerProject.genruntimeconfig.cache
 C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\ref\Telhai.DotNet.PlayerProject.dll
+C:\Users\User\OneDrive\dektop\Tel-Hai\c#\Telhai.DotNet.PlayerProject\obj\Debug\net9.0-windows\Telhai.DotNet.PlayerProject.sourcelink.json
