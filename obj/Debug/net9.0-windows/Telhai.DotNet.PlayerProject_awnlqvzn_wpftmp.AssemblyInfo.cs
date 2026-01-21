@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Telhai.DotNet.PlayerProject")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6e0c715cc91c5e41513d62a2f1ae27573811b624")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7beb01cd7c6c13d51a1a26a3d27aa3332629acc9")]
 [assembly: System.Reflection.AssemblyProductAttribute("Telhai.DotNet.PlayerProject")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Telhai.DotNet.PlayerProject")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
