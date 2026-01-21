@@ -18,6 +18,9 @@ namespace Telhai.DotNet.PlayerProject
         public string? AlbumArtworkUrl { get; set; }
         public DateTime? ReleaseDate { get; set; }
         public string? TrackViewUrl { get; set; }
+        
+        // Custom images for this track
+        public List<string> CustomImages { get; set; } = new List<string>();
 
         // Default artwork path for fallback
         private static string? _defaultArtworkPath;

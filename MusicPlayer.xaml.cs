@@ -21,6 +21,7 @@ namespace Telhai.DotNet.PlayerProject
     {
         private MediaPlayer mediaPlayer = new MediaPlayer();
         private DispatcherTimer timer = new DispatcherTimer();
+        private DispatcherTimer imageRotationTimer = new DispatcherTimer();
         private List<MusicTrack> library = new List<MusicTrack>();
         private bool isDragging = false;
         private const string FILE_NAME = "library.json";
@@ -31,6 +32,7 @@ namespace Telhai.DotNet.PlayerProject
         
         // Currently playing track
         private MusicTrack? currentTrack;
+        private int currentImageIndex = 0;
 
         public MusicPlayer()
         {
@@ -40,9 +42,10 @@ namespace Telhai.DotNet.PlayerProject
             timer.Interval = TimeSpan.FromMilliseconds(500);
             timer.Tick += new EventHandler(Timer_Tick);
 
+            imageRotationTimer.Interval = TimeSpan.FromSeconds(3);
+            imageRotationTimer.Tick += ImageRotationTimer_Tick;
+
             this.Loaded += MusicPlayer_Loaded;
-            // this.MouseDoubleClick += MusicPlayer_MouseDoubleClick;
-            // this.MouseDoubleClick += new MouseButtonEventHandler(MusicPlayer_MouseDoubleClick);
         }
 
         private void MusicPlayer_Loaded(object sender, RoutedEventArgs e)
@@ -173,6 +176,50 @@ namespace Telhai.DotNet.PlayerProject
             }
         }
 
+        private void BtnEdit_Click(object sender, RoutedEventArgs e)
+        {
+            if (lstLibrary.SelectedItem is MusicTrack track)
+            {
+                EditTrackWindow editWindow = new EditTrackWindow(track);
+                if (editWindow.ShowDialog() == true)
+                {
+                    SaveLibrary();
+                    UpdateTrackDetailsUI(track);
+                }
+            }
+        }
+
+        private void ImageRotationTimer_Tick(object? sender, EventArgs e)
+        {
+            if (currentTrack?.CustomImages.Count > 0)
+            {
+                currentImageIndex = (currentImageIndex + 1) % currentTrack.CustomImages.Count;
+                UpdateAlbumArtFromCustomImages();
+            }
+        }
+
+        private void UpdateAlbumArtFromCustomImages()
+        {
+            if (currentTrack?.CustomImages.Count > 0)
+            {
+                try
+                {
+                    string imagePath = currentTrack.CustomImages[currentImageIndex];
+                    if (File.Exists(imagePath))
+                    {
+                        BitmapImage bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.UriSource = new Uri(imagePath);
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.EndInit();
+                        imgAlbumArt.Source = bitmap;
+                        return;
+                    }
+                }
+                catch { }
+            }
+        }
+
         private void LstLibrary_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (lstLibrary.SelectedItem is MusicTrack track)
@@ -208,6 +255,7 @@ namespace Telhai.DotNet.PlayerProject
         {
             // Store current track reference
             currentTrack = track;
+            currentImageIndex = 0;
             
             // Cancel any previous iTunes search
             currentSearchCancellation?.Cancel();
@@ -219,6 +267,16 @@ namespace Telhai.DotNet.PlayerProject
             timer.Start();
             txtCurrentSong.Text = track.Title;
             txtStatus.Text = "Playing";
+
+            // Start image rotation if custom images exist
+            if (track.CustomImages.Count > 0)
+            {
+                imageRotationTimer.Start();
+            }
+            else
+            {
+                imageRotationTimer.Stop();
+            }
 
             // Search iTunes metadata asynchronously without blocking UI
             await SearchAndUpdateTrackMetadataAsync(track, currentSearchCancellation.Token);
@@ -232,6 +290,14 @@ namespace Telhai.DotNet.PlayerProject
         {
             try
             {
+                // Check if metadata already cached
+                if (!string.IsNullOrEmpty(track.ArtistName) || track.CustomImages.Count > 0)
+                {
+                    // Use cached data
+                    UpdateTrackDetailsUI(track);
+                    return;
+                }
+
                 // Extract search query from filename
                 string searchQuery = iTunesService.ExtractSearchQuery(track.Title);
                 
@@ -254,6 +320,9 @@ namespace Telhai.DotNet.PlayerProject
                     {
                         track.ReleaseDate = releaseDate;
                     }
+
+                    // Save to cache
+                    SaveLibrary();
 
                     // Update UI with new metadata
                     UpdateTrackDetailsUI(track);
@@ -291,8 +360,15 @@ namespace Telhai.DotNet.PlayerProject
                 txtAlbum.Text = track.AlbumName;
             }
 
-            // Update album artwork
-            if (!string.IsNullOrEmpty(track.AlbumArtworkUrl))
+            // Display file path
+            txtFilePath.Text = $"Path: {track.FilePath}";
+
+            // Display custom images or album artwork
+            if (track.CustomImages.Count > 0)
+            {
+                UpdateAlbumArtFromCustomImages();
+            }
+            else if (!string.IsNullOrEmpty(track.AlbumArtworkUrl))
             {
                 try
                 {
@@ -309,9 +385,10 @@ namespace Telhai.DotNet.PlayerProject
                     imgAlbumArt.Source = LoadDefaultAlbumArt();
                 }
             }
-
-            // Display file path
-            txtFilePath.Text = $"Path: {track.FilePath}";
+            else
+            {
+                imgAlbumArt.Source = LoadDefaultAlbumArt();
+            }
         }
 
         /// <summary>
